@@ -5,6 +5,7 @@ const {
   Furnance,
   QualityCheckDevice,
   sequelize,
+  Sequelize,
 } = require("../database/models");
 
 const deviceTypeList = {
@@ -59,6 +60,7 @@ const add = async (req, res) => {
     };
     return res.status(201).json({ device: rest });
   } catch (errors) {
+    await t.rollback();
     console.log(errors);
     return res.status(400).json({
       errors: ["Error creating device. Check if the payload is valid"],
@@ -88,6 +90,24 @@ const update = async (req, res) => {
     const fieldsToUpdate = { name, type, status, ip, factoryId };
 
     const device = await Device.findOne({ where: { id } });
+
+    const deviceWithConflig = await Device.findOne({
+      where: {
+        [Sequelize.Op.or]: [
+          { name, factoryId },
+          { ip, factoryId },
+        ],
+        id: { [Sequelize.Op.ne]: id },
+      },
+    });
+
+    if (deviceWithConflig) {
+      return res.status(400).json({
+        errors: [
+          "There is a conflic with the device to update. It does affect existing rows",
+        ],
+      });
+    }
 
     await device.update({ ...fieldsToUpdate }, { where: { id } });
     const deviceUpdated = await Device.findOne({ where: { id } });

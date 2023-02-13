@@ -8,14 +8,14 @@ const {
   update,
 } = require("../controllers/device.controller");
 const {
-  doesNotExistById,
-  deviceExists,
+  newDeviceRequired,
+  deviceExistsRequired,
   isValidDevice,
 } = require("../middlewares/device.middleware");
 const router = express.Router();
 
 router.get("/", getAll);
-router.post("/", [deviceExists, isValidDevice], add);
+router.post("/", [newDeviceRequired, isValidDevice], add);
 router.delete("/:id", remove);
-router.put("/:id", [doesNotExistById, isValidDevice], update);
+router.put("/:id", [deviceExistsRequired, isValidDevice], update);
 module.exports = router;

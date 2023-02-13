@@ -1,9 +1,14 @@
-const { Device } = require("../database/models");
+const { Device, Sequelize } = require("../database/models");
 
-async function deviceExists(req, res, next) {
+async function newDeviceRequired(req, res, next) {
   const { name, factoryId, ip } = req.body;
   const device = await Device.findOne({
-    where: { name, ip },
+    where: {
+      [Sequelize.Op.or]: [
+        { name, factoryId },
+        { ip, factoryId },
+      ],
+    },
   });
 
   if (device) {
@@ -13,7 +18,7 @@ async function deviceExists(req, res, next) {
   next();
 }
 
-async function doesNotExistById(req, res, next) {
+async function deviceExistsRequired(req, res, next) {
   const { id } = req.params;
   const device = await Device.findOne({
     where: { id },
@@ -43,7 +48,7 @@ async function isValidDevice(req, res, next) {
 }
 
 module.exports = {
-  deviceExists,
+  newDeviceRequired,
+  deviceExistsRequired,
   isValidDevice,
-  doesNotExistById,
 };
