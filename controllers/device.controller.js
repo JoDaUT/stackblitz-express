@@ -1,5 +1,17 @@
 const { DataTypes } = require("sequelize");
-const { Device } = require("../database/models");
+const {
+  Device,
+  Printer3D,
+  Furnance,
+  QualityCheckDevice,
+  sequelize,
+} = require("../database/models");
+
+const deviceTypeList = {
+  "3dPrinter": Printer3D,
+  Furnance: Furnance,
+  qualityCheckDevice: QualityCheckDevice,
+};
 
 const getAll = async (req, res) => {
   const { offset = 0, limit = 10 } = req.params;
@@ -15,19 +27,41 @@ const getAll = async (req, res) => {
 };
 
 const add = async (req, res) => {
-  const { name, type, status, ip, deviceId, factoryId } = req.body;
+  const { name, type, status, ip, factoryId, deviceType, details } = req.body;
+  const t = await sequelize.transaction();
+  try {
+    const newDevice = await Device.create(
+      {
+        name,
+        type,
+        status,
+        ip,
+        factoryId,
+        deviceType,
+      },
+      { transaction: t }
+    );
 
-  const newDevice = await Device.create({
-    name,
-    type,
-    status,
-    ip,
-    deviceId,
-    factoryId,
-  });
-
-  const { deleted, ...rest } = newDevice.toJSON();
-  return res.status(201).json({ device: rest });
+    let specificDevice = {};
+    if (details) {
+      const model = deviceTypeList[deviceType];
+      specificDevice = await model.create(
+        {
+          deviceId: newDevice.id,
+          ...details,
+        },
+        { transaction: t }
+      );
+    }
+    await t.commit();
+    const { deleted, ...rest } = {
+      ...newDevice.toJSON(),
+    };
+    return res.status(201).json({ device: rest });
+  } catch (errors) {
+    console.log(errors);
+    return res.status(500).json({ errors: ["Error creating device"] });
+  }
 };
 
 const remove = async (req, res) => {
