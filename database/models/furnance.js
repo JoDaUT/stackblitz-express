@@ -9,11 +9,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Furnance.belongsTo(models.Device, { foreignKey: "deviceId" });
     }
   }
   Furnance.init(
     {
-      maxTemperture: { type: DataTypes.FLOAT, allowNull: false },
+      maxTemperature: { type: DataTypes.FLOAT, allowNull: false },
     },
     {
       sequelize,
