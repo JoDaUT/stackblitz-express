@@ -45,7 +45,7 @@ describe("POST /device", () => {
       name: "Printer 5",
       type: "Ender V3",
       status: "Online",
-      ip: "192.168.3.9",
+      ip: "192.168.3.25",
       deviceType: "3dPrinter",
       factoryId: 100000,
     };
@@ -72,7 +72,7 @@ describe("POST /device", () => {
       name: "Printer 5",
       type: "Ender V3",
       status: "Active",
-      ip: "192.168.3.9",
+      ip: "192.168.3.26",
       deviceType: "3dPrinter",
       factoryId: 1,
     };
@@ -90,7 +90,7 @@ describe("POST /device", () => {
     name: "Printer 5",
     type: "Ender V3",
     status: "Online",
-    ip: "192.168.3.9",
+    ip: "192.168.3.27",
     deviceType: "3dPrinter",
     factoryId: 1,
   };
