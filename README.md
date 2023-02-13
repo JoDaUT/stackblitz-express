@@ -1,6 +1,16 @@
 # node-dmbz1u
 
-[Edit on StackBlitz ⚡️](https://stackblitz.com/edit/node-dmbz1u)
+[Edit on StackBlitz ⚡️](https://stackblitz.com/edit/express-simple-n32cyz)
+
+# Database design
+
+I considered two distinct approaches:
+
+Have a single "Device" table with fields such as "name", "ip", "type", "status", and "factoryId". In addition, a JSON field called "details" could be added to store any extra device-specific information. However, I ultimately decided against this approach as it could lead to over-reliance on JSON, and for that reasoning a NoSQL database is a better option.
+
+Have a base "Device" table with the same fields as before, but also include three child tables to store specific information about each device. While this approach adds complexity to queries, it aligns with normalization and the relational database philosophy.
+
+I decided to go with option 2 as it was more familiar and met the requirements of this code challenge.
 
 # Project scaffolding
 
@@ -48,6 +58,15 @@ You have to change `NODE_ENV` to `development` into your `.env` file or export t
 npm run start
 ```
 
+# How to use
+
+You have the following routes available:
+
+- GET http://localhost:3010/device
+- POST http://localhost:3010/device
+- PUT http://localhost:3010/device/:id
+- DELETE http://localhost:3010/device/:id
+
 # Run tests
 
 You have to change `NODE_ENV` to `test` into your `.env` file
@@ -57,7 +76,7 @@ npx sequelize-cli db:drop;npx sequelize-cli db:create; npx sequelize-cli db:migr
 npm run start
 ```
 
-In another terminal:
+In a different terminal:
 
 ```
 npm run test
@@ -68,4 +87,5 @@ npm run test
 - It would be more maintainable to have env file per environment. For example, `.env.development`, `.env.testing`, `.env.production`
 - The tests implemented still can be improved to be completely not dependent from the seeds.
 - All the device interactions with the database could be more abstracted with techniques like the Repository pattern.
+- This project does not implement any kind of session authentication.
 - This documentation was tested of only Windows using PowerShell.
