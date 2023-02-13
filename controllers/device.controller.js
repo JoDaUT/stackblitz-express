@@ -60,7 +60,9 @@ const add = async (req, res) => {
     return res.status(201).json({ device: rest });
   } catch (errors) {
     console.log(errors);
-    return res.status(500).json({ errors: ["Error creating device"] });
+    return res.status(400).json({
+      errors: ["Error creating device. Check if the payload is valid"],
+    });
   }
 };
 
@@ -79,7 +81,38 @@ const remove = async (req, res) => {
 
 const update = async (req, res) => {
   const id = req.params.id;
-  return res.status(200).json({ success: true, id });
+
+  const { name, type, status, ip, factoryId, details } = req.body;
+  const t = await sequelize.transaction();
+  try {
+    const fieldsToUpdate = { name, type, status, ip, factoryId };
+
+    const device = await Device.findOne({ where: { id } });
+
+    await device.update({ ...fieldsToUpdate }, { where: { id } });
+    const deviceUpdated = await Device.findOne({ where: { id } });
+    let specificDevice = {};
+    if (details) {
+      const deviceType = device.deviceType;
+
+      const model = deviceTypeList[deviceType];
+
+      await model.update(
+        { ...details },
+        { where: { deviceId: id }, transaction: t }
+      );
+    }
+    await t.commit();
+    const { deleted, ...rest } = {
+      ...deviceUpdated.toJSON(),
+    };
+    return res.status(200).json({ device: rest });
+  } catch (errors) {
+    console.log(errors);
+    return res.status(400).json({
+      errors: ["Error updating device. Check if the payload is valid"],
+    });
+  }
 };
 
 module.exports = {

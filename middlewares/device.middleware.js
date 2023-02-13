@@ -13,6 +13,19 @@ async function deviceExists(req, res, next) {
   next();
 }
 
+async function doesNotExistById(req, res, next) {
+  const { id } = req.params;
+  const device = await Device.findOne({
+    where: { id },
+  });
+
+  if (!device) {
+    return res.status(404).json({ errors: ["Device does not exist"] });
+  }
+
+  next();
+}
+
 async function isValidDevice(req, res, next) {
   const { ip, status } = req.body;
   const validIp =
@@ -32,4 +45,5 @@ async function isValidDevice(req, res, next) {
 module.exports = {
   deviceExists,
   isValidDevice,
+  doesNotExistById,
 };
