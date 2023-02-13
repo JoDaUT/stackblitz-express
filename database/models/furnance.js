@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Furnance extends Model {
     /**
@@ -13,11 +11,14 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  Furnance.init({
-    maxTemperture: DataTypes.FLOAT
-  }, {
-    sequelize,
-    modelName: 'Furnance',
-  });
+  Furnance.init(
+    {
+      maxTemperture: { type: DataTypes.FLOAT, allowNull: false },
+    },
+    {
+      sequelize,
+      modelName: "Furnance",
+    }
+  );
   return Furnance;
 };

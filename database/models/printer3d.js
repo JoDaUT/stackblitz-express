@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Printer3D extends Model {
     /**
@@ -10,14 +8,17 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Printer3D.belongsTo(models.Device, { foreignKey: "deviceId" });
     }
   }
-  Printer3D.init({
-    deviceId: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'Printer3D',
-  });
+  Printer3D.init(
+    {
+      deviceId: { type: DataTypes.INTEGER, allowNull: false },
+    },
+    {
+      sequelize,
+      modelName: "Printer3D",
+    }
+  );
   return Printer3D;
 };
