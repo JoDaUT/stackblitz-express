@@ -11,20 +11,28 @@ module.exports = {
       },
       name: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       ip: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       type: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       status: {
         type: Sequelize.ENUM,
         values: ["Online", "Offline"],
+        allowNull: false,
       },
       deleted: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
+      },
+      deviceType: {
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
