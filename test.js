@@ -201,11 +201,12 @@ describe("PUT /device/:id", () => {
     const response = await request(baseURL).put(`/device/${id}`).send(device);
 
     expect(response.statusCode).toBe(200);
-    expect(response.body.name).toBe(device.name);
-    expect(response.body.ip).toBe(device.ip);
-    expect(response.body.type).toBe(device.type);
-    expect(response.body.status).toBe(device.status);
-    expect(response.body.factoryId).toBe(device.factoryId);
+    expect(response.body).toHaveProperty("device");
+    expect(response.body.device.name).toBe(device.name);
+    expect(response.body.device.ip).toBe(device.ip);
+    expect(response.body.device.type).toBe(device.type);
+    expect(response.body.device.status).toBe(device.status);
+    expect(response.body.device.factoryId).toBe(device.factoryId);
   });
 });
 
@@ -225,7 +226,7 @@ describe("PUT /device/:id", () => {
 
     const response = await request(baseURL).put(`/device/${id}`).send(device);
 
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(404);
     expect(response.body).toHaveProperty("errors");
     expect(Array.isArray(response.body.errors));
     expect(response.body.errors.length).toBeGreaterThan(0);
@@ -247,6 +248,50 @@ describe("PUT /device/:id", () => {
     };
 
     const response = await request(baseURL).put(`/device/${id}`).send(device);
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toHaveProperty("errors");
+    expect(Array.isArray(response.body.errors));
+    expect(response.body.errors.length).toBeGreaterThan(0);
+  });
+});
+
+describe("POST /device", () => {
+  const device = {
+    name: "QC 3",
+    ip: "192.168.3.11",
+    type: "Rapid",
+    status: "Online",
+    deviceType: "qualityCheckDevice",
+    factoryId: 1,
+    details: {
+      capacity: 5,
+    },
+  };
+  it("should not allow to add a device if there is another device with the same ip address in the same factory", async () => {
+    const response = await request(baseURL).post("/device").send(device);
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toHaveProperty("errors");
+    expect(Array.isArray(response.body.errors));
+    expect(response.body.errors.length).toBeGreaterThan(0);
+  });
+});
+
+describe("POST /device", () => {
+  const device = {
+    name: "QC 2",
+    ip: "192.168.3.12",
+    type: "Rapid",
+    status: "Online",
+    deviceType: "qualityCheckDevice",
+    factoryId: 1,
+    details: {
+      capacity: 5,
+    },
+  };
+  it("should not allow to add a device if there is another device with the same name in the same factory", async () => {
+    const response = await request(baseURL).post("/device").send(device);
 
     expect(response.statusCode).toBe(400);
     expect(response.body).toHaveProperty("errors");
