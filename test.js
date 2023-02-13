@@ -18,17 +18,36 @@ describe("POST /device", () => {
     type: "Ender V3",
     status: "Online",
     ip: "192.168.3.asdfas",
-    device: 1,
-    factory: 1,
+    deviceType: "3dPrinter",
+    factoryId: 1,
   };
   it("should not allow invalid IP addresses", async () => {
     const device = {
       name: "Printer 5",
       type: "Ender V3",
       status: "Online",
+      ip: "192.168.3.xxxxxxx",
+      deviceType: "3dPrinter",
+      factoryId: 1,
+    };
+    const response = await request(baseURL).post("/device").send(device);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty("errors");
+    expect(Array.isArray(response.body.errors));
+    expect(response.body.errors.length).toBeGreaterThan(0);
+  });
+});
+
+describe("POST /device", () => {
+  it("should not allow an invalid factory id", async () => {
+    const device = {
+      name: "Printer 5",
+      type: "Ender V3",
+      status: "Online",
       ip: "192.168.3.9",
-      device: 1,
-      factory: 1,
+      deviceType: "3dPrinter",
+      factoryId: 100000,
     };
     const response = await request(baseURL).post("/device").send(device);
 
@@ -45,17 +64,17 @@ describe("POST /device", () => {
     type: "Ender V3",
     status: "Online",
     ip: "192.168.3.asdfas",
-    device: 1,
-    factory: 1,
+    deviceType: "3dPrinter",
+    factoryId: 1,
   };
-  it("should not allow an invalid factory id", async () => {
+  it("should not allow an invalid status", async () => {
     const device = {
       name: "Printer 5",
       type: "Ender V3",
-      status: "Online",
+      status: "Active",
       ip: "192.168.3.9",
-      device: 1,
-      factory: 100000,
+      deviceType: "3dPrinter",
+      factoryId: 1,
     };
     const response = await request(baseURL).post("/device").send(device);
 
@@ -72,8 +91,8 @@ describe("POST /device", () => {
     type: "Ender V3",
     status: "Online",
     ip: "192.168.3.9",
-    device: 1,
-    factory: 1,
+    deviceType: "3dPrinter",
+    factoryId: 1,
   };
   it("should create a device with the specified name, type, status, IP, and device string", async () => {
     const response = await request(baseURL).post("/device").send(device);
@@ -86,6 +105,14 @@ describe("POST /device", () => {
 
 describe("POST /device", () => {
   it("shout not allow duplicated devices with same IP address and factory", async () => {
+    const device = {
+      name: "Printer 5",
+      type: "Ender V3",
+      status: "Online",
+      ip: "192.168.3.9",
+      deviceType: "3dPrinter",
+      factoryId: 1,
+    };
     const response = await request(baseURL).post("/device").send(device);
 
     expect(response.statusCode).toBe(400);
@@ -126,8 +153,8 @@ describe("PUT /device/:id", () => {
       type: "Ender V3",
       status: "Offline",
       ip: "192.168.3.100",
-      device: "3D Printer",
-      factory: "Burlington",
+      deviceType: "3dPrinter",
+      factoryId: 1,
     };
 
     const response = await request(baseURL).put(`/device/${id}`).send(device);
