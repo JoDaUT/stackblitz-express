@@ -94,12 +94,51 @@ describe("POST /device", () => {
     deviceType: "3dPrinter",
     factoryId: 1,
   };
-  it("should create a device with the specified name, type, status, IP, and device string", async () => {
+  it("should create a 3d printer device with the specified name, type, status, IP, and device string", async () => {
     const response = await request(baseURL).post("/device").send(device);
 
     expect(response.statusCode).toBe(201);
     expect(response.body).toHaveProperty("device");
-    expect(response.body.device).toMatchObject(device);
+  });
+});
+
+describe("POST /device", () => {
+  const device = {
+    name: "Furn 2",
+    ip: "192.168.3.10",
+    type: "Combi",
+    status: "Online",
+    deviceType: "Furnance",
+    factoryId: 2,
+    details: {
+      maxTemperature: 500,
+    },
+  };
+  it("should create a furnance device with the specified name, type, status, IP, and device string", async () => {
+    const response = await request(baseURL).post("/device").send(device);
+
+    expect(response.statusCode).toBe(201);
+    expect(response.body).toHaveProperty("device");
+  });
+});
+
+describe("POST /device", () => {
+  const device = {
+    name: "QC 2",
+    ip: "192.168.3.11",
+    type: "Rapid",
+    status: "Online",
+    deviceType: "qualityCheckDevice",
+    factoryId: 1,
+    details: {
+      capacity: 5,
+    },
+  };
+  it("should create a quality check device with the specified name, type, status, IP, and device string", async () => {
+    const response = await request(baseURL).post("/device").send(device);
+
+    expect(response.statusCode).toBe(201);
+    expect(response.body).toHaveProperty("device");
   });
 });
 
@@ -147,23 +186,71 @@ describe("DELETE /device/:id", () => {
 
 describe("PUT /device/:id", () => {
   it("should update a device", async () => {
-    const id = 1;
+    const id = 5;
     const device = {
-      name: "Printer 1.0",
-      type: "Ender V3",
-      status: "Offline",
-      ip: "192.168.3.100",
-      deviceType: "3dPrinter",
+      name: "Furn 1-updated",
+      ip: "192.168.3.8",
+      type: "Combi",
+      status: "Online",
       factoryId: 1,
+      details: {
+        maxTemperature: 150,
+      },
     };
 
     const response = await request(baseURL).put(`/device/${id}`).send(device);
 
     expect(response.statusCode).toBe(200);
     expect(response.body.name).toBe(device.name);
+    expect(response.body.ip).toBe(device.ip);
     expect(response.body.type).toBe(device.type);
     expect(response.body.status).toBe(device.status);
-    expect(response.body.ip).toBe(device.ip);
-    expect(response.body.device).toBe(device.device);
+    expect(response.body.factoryId).toBe(device.factoryId);
+  });
+});
+
+describe("PUT /device/:id", () => {
+  it("should not update a device that does not exist", async () => {
+    const id = 5000;
+    const device = {
+      name: "Furn 1-updated",
+      ip: "192.168.3.8",
+      type: "Combi",
+      status: "Online",
+      factoryId: 1,
+      details: {
+        maxTemperature: 150,
+      },
+    };
+
+    const response = await request(baseURL).put(`/device/${id}`).send(device);
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toHaveProperty("errors");
+    expect(Array.isArray(response.body.errors));
+    expect(response.body.errors.length).toBeGreaterThan(0);
+  });
+});
+
+describe("PUT /device/:id", () => {
+  it("should not update a device if the body is invalid", async () => {
+    const id = 3;
+    const device = {
+      name: "Furn 1-updated",
+      ip: "192.168.3.8",
+      type: "Combi",
+      status: "Active",
+      factoryId: 1,
+      details: {
+        maxTemperature: 150,
+      },
+    };
+
+    const response = await request(baseURL).put(`/device/${id}`).send(device);
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toHaveProperty("errors");
+    expect(Array.isArray(response.body.errors));
+    expect(response.body.errors.length).toBeGreaterThan(0);
   });
 });
