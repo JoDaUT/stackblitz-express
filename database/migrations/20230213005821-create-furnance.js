@@ -9,7 +9,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      maxTemperture: {
+      maxTemperature: {
         type: Sequelize.FLOAT,
         allowNull: false,
       },
